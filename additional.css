@@ -1,0 +1,63 @@
+@import url(https://fonts.googleapis.com/css?family=Caveat);
+
+.reveal img.headshot {
+  margin-bottom: 0;
+  border: none;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.reveal table.tight td {
+    padding: 0 0 0 20px;
+    margin: 0;
+}
+
+.reveal img.logo {
+	background: none;
+	border: none;
+	box-shadow: none;
+}
+
+.reveal .purple {
+	color: #ffddff;
+	text-shadow: 1px 2px 2px black;
+}
+
+.reveal .handwriting {
+  font-family: 'Caveat', cursive;
+}
+
+.reveal .history-column {
+  font-size: 70%;
+  display: inline-block;
+  text-align: left;
+}
+
+.reveal .tags {
+  margin: 5px 0 5px 2em;
+  line-height: 1.5em;
+}
+
+.reveal .tags span {
+  padding: 0 10px 0px 10px;
+  border-radius: 12px;
+  margin-right: 6px;
+  border: none;
+}
+
+.reveal .logos img {
+  vertical-align: middle;
+}
+
+.reveal .side-by-side img:first-child {
+  margin-right: 3em;
+}
+
+.reveal .dark-shadow {
+  text-shadow: #000 2px 2px 3px;
+}
+
+.reveal .spaced-list li {
+  margin-bottom: 0.6em;
+}
+
