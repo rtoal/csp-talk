@@ -144,18 +144,23 @@ X :: *[c:character; west?c -> east!c]
 <pre>
 CmdList  ::= (Decl ';' | Cmd ';')* Cmd
 Cmd      ::= 'skip' | Assn | In | Out | Alt | Loop | Parallel
-Parallel ::= '[' Proc ('||' Proc)* ']'
+Parallel ::= '[' Proc # '||' ']'
 Proc     ::= Label? CmdList
-Label    ::= id (Sub (',' Sub)*)? '::'
+Label    ::= id (Sub # ',')? '::'
 Sub      ::= Primary | Range
 Primary  ::= num | id
 Range    ::= id ':' Primary '..' Primary
 Assn     ::= Var ':=' Exp
-Exp      ::= num | str | id | id? '(' (Exp (',' Exp)*)? ')'
-Var      ::= id | id? '(' (Var (',' Var)*)? ')'
+Exp      ::= num | str | id | id? '(' (Exp # ',')? ')'
+Var      ::= id | id? '(' (Var # ',')? ')'
 In       ::= Name '?' Var
 Out      ::= Name '!' Exp
-Name     ::= Id ('(' Exp (',' Exp)* ')')?
+Name     ::= Id ('(' Exp_int # ',' ')')?
+Loop     ::= '*' Alt
+Alt      ::= '[' GCmd # '&#x25af;' ']'
+GCmd     ::= (Range # ',')? Guard '->' CmdList
+Guard    ::= GList | In | GList ';' In
+GList    ::= (Exp_bool | Decl) # ';'
 </pre>
         </section>
 
@@ -171,7 +176,18 @@ P()
 (x, y)
 cons(a,100)
           </pre>
-          </section>
+        </section>
+
+        <section>
+          <h2>Expressions</h2>
+          <ul>
+          <li>Unspecified, come from some kind of
+            host language apparently
+          <li>But of course we want <code>+</code>, <code>*</code>
+            <code>=</code>, <code>>=</code>, etc.
+          <li>Same for types, we should have at least <code>int</code>,
+            <code>bool</code>, <code>string</code>
+        </section>
 
         <section>
           <h2><s style="color:#777">Assignments</s> Matching</h2>
@@ -190,19 +206,40 @@ e := player(class(3), loc(88,173))
 
         <section>
           <h2>Input and Output</h2>
-<pre>
-            ...
-
-</pre>
+          <pre style="font-size:26pt">
+DIV ! (3*a+b, 13)
+X ? (x,y)
+console(j-1) ! "A"
+console(i) ? c
+sem ! P()
+X(i) ? V()
+          </pre>
           <small>Wait for each other. Must match. Assigns. Fails if other side already terminated.</small>
         </section>
 
         <section>
-          <h2>Alternative (Conditional)</h2>
-<pre>
-            ...
-
+          <h2>Guarded Commands</h2>
+<pre style="font-size:26pt;margin:1.5em 0">
+i &le; 80 -> X!cardimage(i)
+(i:0..4)phil(i)?enter() -> diners := diners + 1
+x < 5, c := 10, true, y > c -> x := x + 1
 </pre>
+<div><small>
+Execute command list only if guard succeeds<br>
+Evaluate guard elements left-to-right<br>
+false is fail
+</small></div>
+        </section>
+
+        <section>
+          <h2>Alternative (Conditional)</h2>
+<p style="margin:2em 0">
+[ G1 -> CL1 &#x25af; G2 -> CL2 &#x25af; ... &#x25af; Gn -> CLn ]
+</p>
+        <div><small>
+         Arbitrarily select one of the ready command lists<br>
+         If all guards fail, the whole command fails
+        </small></div>
         </section>
 
         <section>
@@ -211,7 +248,36 @@ e := player(class(3), loc(88,173))
             ...
 
 </pre>
+        <div><small>
+         Loop as long as at least one guard succeeds<br>
+         If all guards fail, the loop exits cleanly
+        </small></div>
         </section>
+
+
+        <section>
+          <p>TODO EXAMPLE</p>
+        </section>
+
+        <section>
+          <p>TODO EXAMPLE</p>
+        </section>
+
+
+        <section>
+          <p>TODO EXAMPLE</p>
+        </section>
+
+
+        <section>
+          <p>TODO EXAMPLE</p>
+        </section>
+
+
+        <section>
+          <p>TODO EXAMPLE</p>
+        </section>
+
 
 
         <section>
