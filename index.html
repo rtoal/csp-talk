@@ -100,7 +100,7 @@
         </section>
 
         <section>
-          <h2 data-transition="fade">A Better Way</h2>
+          <h2 data-transition="fade">Hoare&rsquo;s Seven Proposals</h2>
           <ol>
           <li class="fragment fade-in">Parallel command launches procs simultaneously
           <li class="fragment fade-in">Simple input and output commands
@@ -112,16 +112,19 @@
           </ol>
         </section>
 
-        <section>
-          <code>
-            First examples TODO
-          </code>
-        </section>
+        <section data-transition="convex">
+<pre style="font-size:24pt">
+[cardreader?card || lineprinter!line]
 
-        <section>
-          <code>
-            First examples TODO
-          </code>
+[west::DISSASEMBLE || X::SQUASH || east::ASSEMBLE]
+
+[  room::ROOM 
+|| fork(i:0..4)::FORK 
+|| phil(i:0..4)::PHIL
+]
+
+X :: *[c:character; west?c -> east!c]
+</pre>          
         </section>
 
         <section>
@@ -132,59 +135,82 @@
           <li class="fragment fade-in">Rejection of asychronous buffers
           <li class="fragment fade-in">Very static...Names and sizes of
             processor arrays specified in advance
+          <li class="fragment fade-in"><em>Later, CSP became a process algebra</em>
           </ul>
-          <p class="fragment fade-in"><em>Later, CSP became a process algebra</em></p>
         </section>
 
         <section>
           <h2>Syntax</h2>
-          <code>
-            Command ::= skip | Var ':=' Exp 
-                     |  Proc '?' Exp | Proc '!' Exp
-                     | 
-          </code>
+<pre>
+CmdList  ::= (Decl ';' | Cmd ';')* Cmd
+Cmd      ::= 'skip' | Assn | In | Out | Alt | Loop | Parallel
+Parallel ::= '[' Proc ('||' Proc)* ']'
+Proc     ::= Label? CmdList
+Label    ::= id (Sub (',' Sub)*)? '::'
+Sub      ::= Primary | Range
+Primary  ::= num | id
+Range    ::= id ':' Primary '..' Primary
+Assn     ::= Var ':=' Exp
+Exp      ::= num | str | id | id? '(' (Exp (',' Exp)*)? ')'
+Var      ::= id | id? '(' (Var (',' Var)*)? ')'
+In       ::= Name '?' Var
+Out      ::= Name '!' Exp
+Name     ::= Id ('(' Exp (',' Exp)* ')')?
+</pre>
         </section>
 
         <section>
-          <h2>Examples</h2>
-        </section>
+          <h2>Terms</h2>
+          <pre style="font-size:26pt">
+17
+"string"
+n
+person("alice",age)
+employee("bob",home("pasadena","ca","usa"))
+P()
+(x, y)
+cons(a,100)
+          </pre>
+          </section>
 
         <section>
-          <code>
-            ...
-          </code>
-        </section>
-
-        <section>
-          <code>
-            ...
-          </code>
-        </section>
-
-        <section>
-          <h2>Expressions and Assignments</h2>
+          <h2><s style="color:#777">Assignments</s> Matching</h2>
           <pre style="font-size:26pt">
 n := n * 2 + 1
-a := cons(100, a)
 p := person(name, age)
 person(name, age) := q
-person(name, 29) := person(alice, 29)
+person(name, age) := person("alice", 29)
 c := P()
 P() := c
-e := employee(bob, city(pasadena, ca, usa))
+e := player(class(3), loc(88,173))
+(x,y) := (y,x)
           </pre>
+          <small>To match, must have same structure and same type. Assignment fails if no match.</small>
         </section>
 
         <section>
-          <code>
+          <h2>Input and Output</h2>
+<pre>
             ...
-          </code>
+
+</pre>
+          <small>Wait for each other. Must match. Assigns. Fails if other side already terminated.</small>
         </section>
 
         <section>
-          <code>
+          <h2>Alternative (Conditional)</h2>
+<pre>
             ...
-          </code>
+
+</pre>
+        </section>
+
+        <section>
+          <h2>Repetition (Loop)</h2>
+<pre>
+            ...
+
+</pre>
         </section>
 
 
@@ -200,15 +226,99 @@ e := employee(bob, city(pasadena, ca, usa))
           <h2>So...Who uses this stuff today?</h2>
         </section>
 
-        <section>
+        <section data-transition="zoom">
           <img src="erlang-logo.jpg" style="border:0">
         </section>
 
-        <section>
-          <img src="go-logo.png" style="border:0">
+        <section data-background="hellojoe.jpg">
+          <div style="color:black">
+          <h2 style="color:black">Well, sort of...</h2>
+          <ul>
+          <li class="fragment fade-in">The sender names the receiver but not vice-versa
+          <li class="fragment fade-in">All communication is asynchronous
+          <li class="fragment fade-in">To make it synchronous, pass your process id to the receiver then wait on a response
+          </ul>
+          </div>
         </section>
 
-<section>
+<section data-background="#B83998">
+<p>Warning: Hacky, Inefficient Example</p>
+<small>Just to show a wee bit of Erlang</small>
+<pre><code class="hljs">main(_) ->
+  Max = 1000,
+  Printer = spawn(printer, print_server, []),
+  Counter = spawn(counter, run, [self(), Max-1]),
+  lists:foreach(
+    fun (N) ->
+      spawn(prime_printer, print_if_prime, [N, Printer, Counter])
+    end,
+    lists:seq(2, Max)),
+  receive done -> io:format("done~n") end.</code></pre>
+</section>
+
+<section data-background="#B83998">
+<p>Not a good idea<p>
+<small>Perhaps a good example tho</small>
+<pre><code class="hljs">-module(prime_printer).
+-export([print_if_prime/3]).
+
+print_if_prime(N, Printer, Counter) ->
+  (fun Check(D) ->
+    if
+      D * D > N ->
+        Printer ! N,
+        Counter ! decrement;
+      N rem D == 0 ->
+        Counter ! decrement;
+      true ->
+        Check(D+1)
+    end
+  end)(2).
+</code></pre>
+</section>
+
+<section data-background="#B83998">
+<p>A super generic printer</p>
+<small>Yep, I&rsquo;m a server!</small>
+<pre><code class="hljs">-module(printer).
+-export([print_server/0]).
+
+print_server() ->
+  receive
+    N ->
+      io:format("~p ", [N]),
+      print_server()
+  end.
+</code></pre>
+</section>
+
+<section data-background="#B83998">
+<p>Here&rsquo;s that counter</p>
+<pre><code class="hljs">-module(counter).
+-export([run/2]).
+
+run(Observer, 0) ->
+  Observer ! done;
+run(Observer, N) ->
+  receive
+    decrement -> run(Observer, N-1)
+  end.
+</code></pre>
+<small>You didn&rsquo;t think Erlang had loops, did you?</small>
+</section>
+
+
+        <section>
+          <h2>Who else?</h2>
+        </section>
+
+        <section data-background="#eeeeee" data-transition="zoom">
+          <img src="go-logo.png" style="border:0;box-shadow:none">
+        </section>
+
+<section data-background="#152a8b">
+<p>But with channels, not named processes</p>
+<p>Channels are synchronous (by default)</p>
 <pre><code class="hljs">
 package main
 
@@ -223,7 +333,8 @@ func Example() {
 </code></pre>
 </section>
 
-<section>
+<section data-background="#152a8b">
+<p>You can have a buffered channel, too</p>
 <pre><code class="hljs">
 func generateMessages(ch chan string, n int) {
   for i := 0; i < n; i++ {
@@ -242,7 +353,8 @@ func main() {
 </code></pre>
 </section>
 
-<section>
+<section data-background="#152a8b">
+<p>Concurrent Sieve! (by Rob Pike, I think)</p>
 <pre><code class="hljs">
 func generate(first chan<- int) {
   for i := 2; ; i++ {
@@ -273,6 +385,10 @@ func main() {
 </code></pre>
 </section>
 
+        <section data-background="white">
+          <p>http://divan.github.io/posts/go_concurrency_visualize/</p>
+          <img src="sieve.png" style="box-shadow:none">
+        </section>
 
         <section>
           <h2>CSP in Go</h2>
@@ -282,12 +398,20 @@ func main() {
         </section>
 
         <section>
-          <h2>Thanks to</h2>
-          <p>
-            <img src="yahoo-logo.png" style="border:none" height=150>
-            <img src="pwl-logo.jpeg" style="border:none;margin-left:2em" height=150>
-          </p>
-          <p>and @cateches</p>
+          <h2>Wrap Up</h2>
+          <ul>
+            <li class="fragment fade-in">Originally a language, later a process algebra
+            <li class="fragment fade-in">No shared memory, just message passing
+            <li class="fragment fade-in">Synchronous, unbuffered, named sender and receiver
+            <li class="fragment fade-in">Influence on Erlang, Go, many other languages
+            <li class="fragment fade-in">You should check out the <em>Go visualizations</em> and <em>CSP in Go</em>
+            <li class="fragment fade-in">Start thinking concurrently. And reread the paper.
+          </ul>
+        </section>
+
+        <section data-background="white">
+          <h2 style="margin-bottom:1.25em">Thanks to</h2>
+          <p><img src="yahoo-logo.png" style="border:none" height=70><br>and<br><img src="pwl-logo.jpeg" style="border:none" height=150><br>and @cateches</p>
         </section>
 
       </div>
