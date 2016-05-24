@@ -37,7 +37,7 @@
           <div style="margin-left: 10em">
             <p class="dark-shadow">Tony Hoare's</p>
             <h1 class="dark-shadow" style="font-size:500%;letter-spacing:0.3ex">CSP</h1>
-            <h3 class="dark-shadow">Then and Now</h3>
+            <h3 class="dark-shadow">The Old School<br>Version</h3>
             <p class="dark-shadow" style="margin-top:2em">@rtoal</p>
           </div>
         </section>
@@ -61,33 +61,36 @@
             <ul class="spaced-list">
             <li class="fragment fade-in">Quicksort
             <li class="fragment fade-in">Axiomatic Semantics (Hoare Logic)
-            <li class="fragment fade-in">Communicating Sequential Processes
             <li class="fragment fade-in">Monitors
+            <li class="fragment fade-in" style="color:yellow">Communicating Sequential Processes
             <li class="fragment fade-in">The Billion Dollar Mistake
             </ul>
           </div>
         </section>
 
-
-        <section>
-          <blockquote>Developments of processor technology suggest
+        <section data-background="nvidia.jpg">
+          <blockquote>&ldquo;Developments of processor technology suggest
             that a multiprocessor machine, constructed from a number
             of similar, self-contined processors (each with its own store),
             may become more powerful, capacious, reliable, and economical
-            than a machine which is disguised as a monoprocessor.
+            than a machine which is disguised as a monoprocessor.&rdquo;
             </blockquote>
         </section>
 
-        <section>
-          <h2>When?</h2>
-          <p style="font-size:700%" class="fragment fade-in">1978</p>
+        <section data-background=70s.jpg>
+          <h2 class="dark-shadow">When did he say that?</h2>
+          <p style="font-size:700%" class="fragment fade-in dark-shadow">1978</p>
         </section>
 
         <section>
-          <h2>Why?</h2>
-          <p class="fragment fade-in">Well, shared memory not the greatest</p>
-          <ul>
-            <li class="fragment fade-in">Races!
+          <h2>Why did he write this paper?</h2>
+          <p class="fragment fade-in">There&rsquo;s an issue with shared, mutable state.</p>
+          <p class="fragment fade-in">Let&rsquo;s see, what was that again...?</p>
+        </section>
+
+        <section data-transition="zoom" data-background="race.jpg">
+          <h2  class="fragment fade-in"style="color:black;margin-bottom:2.5em;font-size:300%">RACES!</h2>
+          <ul style="color:black">
             <li class="fragment fade-in">Hardware solutions? 
               <span class="fragment fade-in">Expensive (well it used to be)</span>
             <li class="fragment fade-in">Software solutions? 
@@ -97,7 +100,7 @@
         </section>
 
         <section>
-          <h2>THE BASICS</h2>
+          <h2 data-transition="fade">A Better Way</h2>
           <ol>
           <li class="fragment fade-in">Parallel command launches procs simultaneously
           <li class="fragment fade-in">Simple input and output commands
@@ -108,6 +111,185 @@
           <li class="fragment fade-in">Pattern matching
           </ol>
         </section>
+
+        <section>
+          <code>
+            First examples TODO
+          </code>
+        </section>
+
+        <section>
+          <code>
+            First examples TODO
+          </code>
+        </section>
+
+        <section>
+          <h2>CSP the &ldquo;language&rdquo;</h2>
+          <ul>
+          <li class="fragment fade-in">Not intended to be a full language</p>
+          <li class="fragment fade-in">Explicit naming of processes on both ends, rather than channels
+          <li class="fragment fade-in">Rejection of asychronous buffers
+          <li class="fragment fade-in">Very static...Names and sizes of
+            processor arrays specified in advance
+          </ul>
+          <p class="fragment fade-in"><em>Later, CSP became a process algebra</em></p>
+        </section>
+
+        <section>
+          <h2>Syntax</h2>
+          <code>
+            Command ::= skip | Var ':=' Exp 
+                     |  Proc '?' Exp | Proc '!' Exp
+                     | 
+          </code>
+        </section>
+
+        <section>
+          <h2>Examples</h2>
+        </section>
+
+        <section>
+          <code>
+            ...
+          </code>
+        </section>
+
+        <section>
+          <code>
+            ...
+          </code>
+        </section>
+
+        <section>
+          <h2>Expressions and Assignments</h2>
+          <pre style="font-size:26pt">
+n := n * 2 + 1
+a := cons(100, a)
+p := person(name, age)
+person(name, age) := q
+person(name, 29) := person(alice, 29)
+c := P()
+P() := c
+e := employee(bob, city(pasadena, ca, usa))
+          </pre>
+        </section>
+
+        <section>
+          <code>
+            ...
+          </code>
+        </section>
+
+        <section>
+          <code>
+            ...
+          </code>
+        </section>
+
+
+        <section>
+          <h2>Hoare&rsquo;s Suggestion</h2>
+          <p>Concurrency and communication should be regarded as
+            primitives of programming (not unlike assignment,
+            sequencing,
+            choice, repetition, and functional abstraction).
+        </section>
+
+        <section>
+          <h2>So...Who uses this stuff today?</h2>
+        </section>
+
+        <section>
+          <img src="erlang-logo.jpg" style="border:0">
+        </section>
+
+        <section>
+          <img src="go-logo.png" style="border:0">
+        </section>
+
+<section>
+<pre><code class="hljs">
+package main
+
+import "fmt"
+
+func Example() {
+    ch := make(chan string)
+    go func() {ch <- "Hello, world"}()
+    fmt.Println(<-ch)
+    // Output: Hello, world
+}
+</code></pre>
+</section>
+
+<section>
+<pre><code class="hljs">
+func generateMessages(ch chan string, n int) {
+  for i := 0; i < n; i++ {
+    ch <- "Hello"
+  }
+  close(ch)
+}
+
+func main() {
+  messages := make(chan string, 5)
+  go generateMessages(messages, 100)
+  for message := range messages {
+    fmt.Println(message)
+  }
+}
+</code></pre>
+</section>
+
+<section>
+<pre><code class="hljs">
+func generate(first chan<- int) {
+  for i := 2; ; i++ {
+    first <- i
+  }
+}
+
+func filter(in <-chan int, out chan<- int, prime int) {
+  for {
+    candidate := <-in
+    if candidate % prime != 0 {
+      out <- candidate
+    }
+  }
+}
+
+func main() {
+  ch := make(chan int)
+  go generate(ch)
+  for i := 0; i < 1000; i++ {
+    prime := <-ch
+    fmt.Println(prime)
+    nextCh := make(chan int)
+    go filter(ch, nextCh, prime)
+    ch = nextCh
+  }
+}
+</code></pre>
+</section>
+
+
+        <section>
+          <h2>CSP in Go</h2>
+          <p>https://github.com/thomas11/csp</p>
+          <p><img class="headshot" width=250 src="kappler.jpeg"></p>
+          <p style="font-size:70%">&ldquo;Implementing these examples, and the careful reading of the paper required to do so, were a very enlightening experience. I found the iterative array of 4.2, the concurrent routines changing their behavior execution of 4.5, and the highly concurrent matrix multiplication of 6.2 to be particularly interesting.&rdquo;</p>
+        </section>
+
+        <section>
+          <h2>Thanks to</h2>
+          <p>
+            <img src="yahoo-logo.png" style="border:none" height=150>
+            <img src="pwl-logo.jpeg" style="border:none;margin-left:2em" height=150>
+          </p>
+          <p>and @cateches</p>
+        </section>
+
       </div>
     </div>
 
