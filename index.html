@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
 
-    <title>A Presentation on Tony Hoare's CSP</title>
+    <title>A Presentation on Tony Hoare&rsquo;s CSP</title>
 
     <meta name="description" content="CSP">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,7 +35,7 @@
       <div class="slides">
         <section data-background="hoare-lecture.png">
           <div style="margin-left: 10em">
-            <p class="dark-shadow">Tony Hoare's</p>
+            <p class="dark-shadow">Tony Hoare&rsquo;s</p>
             <h1 class="dark-shadow" style="font-size:500%;letter-spacing:0.3ex">CSP</h1>
             <h3 class="dark-shadow">The Old School<br>Version</h3>
             <p class="dark-shadow" style="margin-top:2em">@rtoal</p>
@@ -43,7 +43,7 @@
         </section>
 
         <section>
-          <small>Hi, it's me</small>
+          <small>Hi, it&rsquo;s me</small>
           <p style="margin:1em"><img class="headshot" src="rt.jpg"></p>
           <small>I like programming languages</small>
         </section>
@@ -91,9 +91,9 @@
         <section data-transition="zoom" data-background="race.jpg">
           <h2  class="fragment fade-in"style="color:black;margin-bottom:2.5em;font-size:300%">RACES!</h2>
           <ul style="color:black">
-            <li class="fragment fade-in">Hardware solutions? 
+            <li class="fragment fade-in">Hardware solutions?
               <span class="fragment fade-in">Expensive (well it used to be)</span>
-            <li class="fragment fade-in">Software solutions? 
+            <li class="fragment fade-in">Software solutions?
               <span class="fragment fade-in">Semaphores, Mutexes, Atomic Operations,
               Monitors, Barriers, Countdowns, OH MY!</span>
           </ul>
@@ -102,7 +102,7 @@
         <section>
           <h2 data-transition="fade">Hoare&rsquo;s Seven Proposals</h2>
           <ol>
-          <li class="fragment fade-in">Parallel command launches procs simultaneously
+          <li class="fragment fade-in">Parallel command launches procs simultaneously and finishes when all the procs finish
           <li class="fragment fade-in">Simple input and output commands
           <li class="fragment fade-in">Unbuffered and synchronous on both sides
           <li class="fragment fade-in">Guards for nondeterminism
@@ -118,13 +118,13 @@
 
 [west::DISSASEMBLE || X::SQUASH || east::ASSEMBLE]
 
-[  room::ROOM 
-|| fork(i:0..4)::FORK 
+[  room::ROOM
+|| fork(i:0..4)::FORK
 || phil(i:0..4)::PHIL
 ]
 
 X :: *[c:character; west?c -> east!c]
-</pre>          
+</pre>
         </section>
 
         <section>
@@ -175,7 +175,9 @@ employee("bob",home("pasadena","ca","usa"))
 P()
 (x, y)
 cons(a,100)
+line[80]
           </pre>
+          <div style="margin-top:-1.5em;margin-left:-5em"><small><em>...Hoare used () for arrays but I don&rsquo;t like that.</em></small></div>
         </section>
 
         <section>
@@ -184,7 +186,7 @@ cons(a,100)
           <li>Unspecified, come from some kind of
             host language apparently
           <li>But of course we want <code>+</code>, <code>*</code>
-            <code>=</code>, <code>>=</code>, etc.
+            <code>=</code>, <code>&gt;</code>, <code>&le;</code>, etc.
           <li>Same for types, we should have at least <code>int</code>,
             <code>bool</code>, <code>string</code>
         </section>
@@ -206,48 +208,53 @@ e := player(class(3), loc(88,173))
 
         <section>
           <h2>Input and Output</h2>
-          <pre style="font-size:26pt">
-DIV ! (3*a+b, 13)
-X ? (x,y)
-console(j-1) ! "A"
-console(i) ? c
-sem ! P()
-X(i) ? V()
-          </pre>
-          <small>Wait for each other. Must match. Assigns. Fails if other side already terminated.</small>
+          <table style="margin:1em auto">
+            <tr><td><code style="font-size:22pt">DIV ! (3*a+b, 13)</code>
+            <tr><td><code style="font-size:22pt">X ? (x,y)</code>
+            <tr><td><code style="font-size:22pt">console(j-1) ! "A"</code>
+            <tr><td><code style="font-size:22pt">console(i) ? c</code>
+            <tr><td><code style="font-size:22pt">sem ! P()</code>
+            <tr><td><code style="font-size:22pt">X(i) ? V()</code>
+            </table>
+
+          <div><small>Wait for each other. Must match. Assigns. Fails if other side already terminated.</small></div>
         </section>
 
         <section>
           <h2>Guarded Commands</h2>
-<pre style="font-size:26pt;margin:1.5em 0">
-i &le; 80 -> X!cardimage(i)
-(i:0..4)phil(i)?enter() -> diners := diners + 1
-x < 5, c := 10, true, y > c -> x := x + 1
-</pre>
-<div><small>
-Execute command list only if guard succeeds<br>
-Evaluate guard elements left-to-right<br>
-false is fail
-</small></div>
+          <p><small><em>Not a top-level command!</em></small></p>
+          <table style="margin:1em auto">
+            <tr><td><code style="font-size:22pt">i &le; 80 -> X!cardimage[i]</code>
+            <tr><td><code style="font-size:22pt">(i:0..4)phil(i)?enter() -> diners := diners + 1</code>
+            <tr><td><code style="font-size:22pt">(x &lt; 5, c := 10, true, y > c -> x := x + 1</code>
+          </table>
+          <div><small>
+            Execute command list only if guard succeeds<br>
+            Evaluate guard elements left-to-right<br>
+            false is fail
+          </small></div>
         </section>
 
         <section>
-          <h2>Alternative (Conditional)</h2>
-<p style="margin:2em 0">
-[ G1 -> CL1 &#x25af; G2 -> CL2 &#x25af; ... &#x25af; Gn -> CLn ]
-</p>
-        <div><small>
-         Arbitrarily select one of the ready command lists<br>
-         If all guards fail, the whole command fails
-        </small></div>
+          <h2>Alternatives (Choices)</h2>
+          <table style="margin:1em auto">
+            <tr><td><code style="font-size:22pt">[ x &ge; y -> m := x &#x25af; y &ge; x -> m := y ]</code>
+            <tr><td><code style="font-size:22pt">[ c &ne; "*" -> east!c &#x25af; c = "*" -> west?c ]</code>
+            <tr><td><code style="font-size:22pt">[ i &lt; 124 -> i := i+1<br>&#x25af; i = 125 -> printer!line; i := 1<br>]</code>
+          </table>
+          <div><small>
+           Arbitrarily select one of the ready command lists<br>
+           If all guards fail, the whole command fails
+          </small></div>
         </section>
 
         <section>
-          <h2>Repetition (Loop)</h2>
-<pre>
-            ...
-
-</pre>
+          <h2>Repetitives (Loops)</h2>
+          <table style="margin:1em auto">
+            <tr><td><code style="font-size:22pt">*[i &le; 80 -> X!card]</code>
+            <tr><td><code style="font-size:22pt">*[X?V() -> val := val+1<br>&#x25af; val > 0; Y?P() -> val := val-1<br>]</code>
+            <tr><td><code style="font-size:22pt"></code>
+          </table>
         <div><small>
          Loop as long as at least one guard succeeds<br>
          If all guards fail, the loop exits cleanly
@@ -256,31 +263,84 @@ false is fail
 
 
         <section>
-          <p>TODO EXAMPLE</p>
+          <h2>Example: Division (slow)</h2>
+<pre><code>
+[ DIV :: *[x,y: integer, X?(x,y) ->
+    quot, rem: integer; quot := 0; rem := x;
+    *[ rem &ge; y -> rem := rem - y; quot := quot + 1 ];
+    X!(quot, rem)
+    ]
+||
+  X :: USER
+]
+</code></pre>
         </section>
 
         <section>
-          <p>TODO EXAMPLE</p>
+          <h2>Example: Factorial</h2>
+<pre><code>
+[ fac(i:1..limit) ::
+  *[n: integer, fac(i-1)?n ->
+     [ n = 0 -> fac(i-1)!1
+     &#x25af; n > 0 -> fac(i+1)!n-1;
+                       r:integer; fac(i+1)?r;
+                       fac(i-1)!(n*r)
+     ]
+   ]
+||
+  fac(0) :: USER
+]
+</code></pre>
+<div><img src="factorial-chain.png"></div>
         </section>
 
-
         <section>
-          <p>TODO EXAMPLE</p>
+          <h2>Example: Buffer (as a Process)</h2>
+<pre><code>
+Q ::
+  buffer: [0..9]object;
+  in, out: integer; in := 0; out := 0;
+
+  *[ in < out+10; producer?buffer[in mod 10] ->
+       in := in+1
+
+   &#x25af; out < in; consumer?more() ->
+       consumer!buffer[out mod 10];
+       out := out + 1
+   ]
+</code></pre>
+<div><small>producer invokes <code>Q!obj</code><br>consumer invokes <code>Q!more(); Q?obj</code></small></div>
         </section>
 
-
         <section>
-          <p>TODO EXAMPLE</p>
+          <h2>Example: Dining Philosophers</h2>
+          <div><small>(Deadlock possible)</small></div>
+<pre><code>
+[room::ROOM || fork(i:0..4)::FORK || phil(i:0..4)::PHIL]
+
+where ROOM =
+  diners: integer; diners := 0;
+  *[ (i:0..4)phil(i)?enter() -> diners := diners + 1
+   &#x25af; (i:0..4)phil(i)?exit() -> diners := diners - 1
+   ]
+
+and FORK =
+  *[ phil(i)?pickup() -> phil(i)?putdown()
+   &#x25af; phil(i-1 mod 5)?pickup() -> phil(i-1 mod 5)?putdown()
+   ]
+
+and PHIL =
+  *[ THINK;
+     room?enter();
+     fork(i)!pickup(); fork(i+1 mod 5)!pickup();
+     EAT;
+     fork(i)!putdown(); fork(i+1 mod 5)!putdown();
+     room!exit()
+   ]
+</code></pre>
         </section>
 
-
-        <section>
-          <p>TODO EXAMPLE</p>
-        </section>
-
-
-
-        <section>
+        <section data-background="darkgreen">
           <h2>Hoare&rsquo;s Suggestion</h2>
           <p>Concurrency and communication should be regarded as
             primitives of programming (not unlike assignment,
@@ -290,6 +350,7 @@ false is fail
 
         <section>
           <h2>So...Who uses this stuff today?</h2>
+          <p><img src="xkcd-win7.png" height=300 style="border:none"></p>
         </section>
 
         <section data-transition="zoom">
