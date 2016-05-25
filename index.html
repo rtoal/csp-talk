@@ -108,7 +108,7 @@
           <li class="fragment fade-in">Guards for nondeterminism
           <li class="fragment fade-in">Input commands in guards
           <li class="fragment fade-in">Input commands in loops
-          <li class="fragment fade-in">Pattern matching
+          <li class="fragment fade-in">Pattern matching to discriminate incoming messages
           </ol>
         </section>
 
@@ -125,6 +125,7 @@
 
 X :: *[c:character; west?c -> east!c]
 </pre>
+<div style="margin:1em"><small><em>The ALLCAPS are not variables&mdash;just metalinguistic placeholders for actual code</em></small></div>
         </section>
 
         <section>
@@ -261,6 +262,18 @@ e := player(class(3), loc(88,173))
         </small></div>
         </section>
 
+        <section>
+          <h2>Parallel Composition</h2>
+          <table style="margin:1em auto">
+            <tr><td><code style="font-size:22pt">[a::A || b::B || c::C || d::D]</code>
+            <tr><td><code style="font-size:22pt">[a(1..3)::printer!i*i]</code>
+            <tr><td><code style="font-size:20pt">[a(1)::printer!1 || a(2)::printer!4 || a(3)::printer!9 ]</code>
+          </table>
+        <div><small>
+         The parallel command ends when all commands have finished<br>
+         It succeeds iff all sub-commands succeed
+        </small></div>
+        </section>
 
         <section>
           <h2>Example: Division (slow)</h2>
